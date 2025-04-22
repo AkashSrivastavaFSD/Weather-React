@@ -1,71 +1,59 @@
 import React, { useState, useEffect } from "react";
 
 const Weather = () => {
-  // States to keep track of city name, weather data, any errors, and mobile responsiveness
-  const [city, setCity] = useState("");
-  const [weatherData, setWeatherData] = useState(null);
-  const [error, setError] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 600);
-  // API key and base URL for fetching weather data
-  const apiKey = "32062ef41e3a7e0b5b528fd8af3934ee";
+  // State variables
+  const [city, setCity] = useState(""); // User input
+  const [weatherData, setWeatherData] = useState(null); // Fetched weather data
+  const [error, setError] = useState(false); // Error flag
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 600); // Responsive check
+
+  // Get API key from .env file
+  const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
+
   const apiUrl = `https://api.openweathermap.org/data/2.5/weather?units=metric&q=`;
 
-  // useEffect to update mobile view when the window size changes (resizing behavior)
+  // Handle screen resize to update isMobile state
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 600);
     };
-
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // This function is triggered when the user clicks the search button
+  // Search weather
   const handleSearch = async () => {
-    // Don't proceed if the input field is empty
     if (!city.trim()) {
       alert("Please enter city");
       return;
     }
 
     try {
-      // Make an API call to get weather data for the entered city
       const response = await fetch(`${apiUrl}${city}&appid=${apiKey}`);
-
-      // If the city is not found (404 status), show an error
       if (response.status === 404) {
         setError(true);
         setWeatherData(null);
       } else {
-        const data = await response.json(); // Parse the response data into JSON
+        const data = await response.json();
 
-        let icon = "./images/clear.png"; // Default to clear weather icon
-        const condition = data.weather[0].main; // Extract the main weather condition
+        // Assign icon according to weather condition
+        let icon = "./images/clear.png";
+        const condition = data.weather[0].main;
 
-        // Assign different icons based on weather conditions
-        if (condition === "Clouds") {
-          icon = "./images/clouds.png";
-        } else if (condition === "Clear") {
-          icon = "./images/clear.png";
-        } else if (condition === "Rain") {
-          icon = "./images/rain.png";
-        } else if (condition === "Mist") {
-          icon = "./images/mist.png";
-        } else if (condition === "Drizzle") {
-          icon = "./images/drizzle.png";
-        } else if (condition === "Snow") {
-          icon = "./images/snow.png";
-        } else {
-          icon = "./images/clear.png"; // Fallback icon if no match is found
-        }
+        if (condition === "Clouds") icon = "./images/clouds.png";
+        else if (condition === "Clear") icon = "./images/clear.png";
+        else if (condition === "Rain") icon = "./images/rain.png";
+        else if (condition === "Mist") icon = "./images/mist.png";
+        else if (condition === "Drizzle") icon = "./images/drizzle.png";
+        else if (condition === "Snow") icon = "./images/snow.png";
 
-        // Store the weather data in state for rendering
+        // Set data to state
         setWeatherData({
-          name: data.name, // City name
-          temp: Math.round(data.main.temp), // Current temperature (rounded)
-          humidity: data.main.humidity, // Humidity percentage
-          wind: data.wind.speed, // Wind speed
-          icon: icon, // Weather icon based on condition
+          name: data.name,
+          temp: Math.round(data.main.temp),
+          humidity: data.main.humidity,
+          wind: data.wind.speed,
+          icon: icon,
         });
 
         setError(false);
@@ -75,7 +63,7 @@ const Weather = () => {
     }
   };
 
-  // This function is triggered when the user clicks the reset button and clear input field and weather data.
+  // Clear city and data
   const handleClear = () => {
     setCity("");
     setWeatherData(null);
@@ -102,15 +90,16 @@ const Weather = () => {
     >
       <div
         style={{
-          width: isMobile ? "95%" : "400px", // Adjust width for mobile screens
+          width: isMobile ? "95%" : "400px",
           backgroundColor: "#00DBDE",
           backgroundImage: "linear-gradient(90deg, #00DBDE 0%, #FC00FF 100%)",
           borderRadius: "20px",
-          padding: isMobile ? "25px 7px" : "30px 25px", // Adjust padding for mobile
+          padding: isMobile ? "25px 7px" : "30px 25px",
           textAlign: "center",
           boxSizing: "border-box",
         }}
       >
+        {/* Input & Buttons */}
         <div
           style={{
             width: "100%",
@@ -125,7 +114,7 @@ const Weather = () => {
             type="text"
             placeholder="Enter Your City"
             value={city}
-            onChange={(e) => setCity(e.target.value)} // Update the city state when the user types
+            onChange={(e) => setCity(e.target.value)}
             spellCheck="false"
             style={{
               border: 0,
@@ -141,6 +130,7 @@ const Weather = () => {
             }}
           />
 
+          {/* Search Button */}
           <button
             onClick={handleSearch}
             style={{
@@ -159,6 +149,7 @@ const Weather = () => {
             <img src="./images/find.png" alt="Find" style={{ width: "16px" }} />
           </button>
 
+          {/* Clear Button */}
           <button
             onClick={handleClear}
             style={{
@@ -183,7 +174,7 @@ const Weather = () => {
           </button>
         </div>
 
-        {/* Display error message if city is invalid */}
+        {/* Show error */}
         {error && (
           <div
             style={{
@@ -197,10 +188,11 @@ const Weather = () => {
           </div>
         )}
 
+        {/* Show weather */}
         {weatherData && (
           <div>
             <img
-              src={weatherData.icon} // Display the  weather condition's icon
+              src={weatherData.icon}
               alt="Weather"
               style={{
                 width: "170px",
@@ -225,7 +217,7 @@ const Weather = () => {
               {weatherData.name}
             </h2>
 
-            {/* Show humidity and wind speed data */}
+            {/* Humidity & Wind */}
             <div
               style={{
                 display: "flex",
@@ -237,6 +229,7 @@ const Weather = () => {
                 flexWrap: "wrap",
               }}
             >
+              {/* Humidity */}
               <div
                 style={{
                   display: "flex",
@@ -261,12 +254,13 @@ const Weather = () => {
                       marginTop: "-6px",
                     }}
                   >
-                    {weatherData.humidity}% {/* Display humidity */}
+                    {weatherData.humidity}%
                   </p>
                   <p>Humidity</p>
                 </div>
               </div>
 
+              {/* Wind */}
               <div
                 style={{
                   display: "flex",
@@ -291,7 +285,7 @@ const Weather = () => {
                       marginTop: "-6px",
                     }}
                   >
-                    {weatherData.wind} km/h {/* Display wind speed */}
+                    {weatherData.wind} km/h
                   </p>
                   <p>Wind Speed</p>
                 </div>
