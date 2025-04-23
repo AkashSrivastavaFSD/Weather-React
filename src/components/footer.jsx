@@ -15,7 +15,7 @@ const Footer = () => {
       }}
     >
       <p style={{ margin: 0, fontSize: "18px" }}>
-        © 2025 Demo Slider | All Rights Reserved
+        © 2025 Live Weather | All Rights Reserved
       </p>
       <p style={{ marginTop: "10px", fontSize: "14px" }}>Designed by Akash</p>
       <p style={{ marginTop: "10px", fontWeight: "bold" }}>
