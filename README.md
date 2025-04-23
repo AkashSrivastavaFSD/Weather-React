@@ -39,7 +39,7 @@ Import "remixicon/fonts/remixicon.css";
 
 
 
-🚀 Live Demo
+🚀 Live Demo https://liveweather-phi.vercel.app/
 
 Click to view the live demo: 
 
